@@ -1,0 +1,108 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers on any tag starting with 'v' (e.g., v1.0.0, v1.1.0)
+
+permissions:
+  contents: write # Needed to create releases and upload assets
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: mac
+          - os: windows-latest
+            platform: win
+          - os: ubuntu-latest
+            platform: linux
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild native modules for Electron
+        run: npx electron-rebuild -f -m .
+
+      - name: Build app (compile TypeScript + bundle renderer)
+        run: npm run build
+
+      - name: Package for ${{ matrix.platform }}
+        run: npx electron-builder --${{ matrix.platform }} --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobotta-${{ matrix.platform }}
+          path: |
+            release/*.dmg
+            release/*.zip
+            release/*.exe
+            release/*.AppImage
+            release/*.deb
+            release/*.blockmap
+            release/*.yml
+            release/*.yaml
+          if-no-files-found: ignore
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: find artifacts -type f | head -30
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Jobotta ${{ github.ref_name }}
+          body: |
+            ## Jobotta ${{ github.ref_name }}
+
+            ### Downloads
+
+            | Platform | File | Notes |
+            |---|---|---|
+            | **macOS** | `.dmg` or `.zip` | macOS 14 (Sonoma)+. Apple Silicon & Intel. |
+            | **Windows** | `.exe` installer | Windows 10/11 (64-bit). |
+            | **Linux** | `.AppImage` or `.deb` | Ubuntu 20.04+, Debian, Fedora. |
+
+            ### Installation
+
+            **macOS:** Download the .zip, unzip, drag to Applications. On first launch: right-click → Open.
+            **Windows:** Run the .exe installer. If SmartScreen blocks it: "More info" → "Run anyway".
+            **Linux:** Make the .AppImage executable (`chmod +x`) and run, or install the .deb with `sudo dpkg -i`.
+
+            ### What's New
+            See the [commit history](https://github.com/ovadeus/jobotta/commits/${{ github.ref_name }}) for details.
+
+            ---
+            Built automatically by GitHub Actions.
+          files: artifacts/**/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
