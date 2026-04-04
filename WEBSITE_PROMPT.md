@@ -43,7 +43,7 @@ The homepage is a conversion-focused landing page with these sections in order:
   - Primary (black button): "Download for Mac" — links to `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-1.0.0-mac.zip`
   - Secondary (black outline button): "Download for Windows" — links to `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-Setup-1.0.0.exe`
   - Below the buttons: Tertiary text link: "See How It Works ↓" (scrolls to features)
-- Below CTAs: Small text: "Free and open source. Available for macOS and Windows. Linux coming soon."
+- Below CTAs: Small text: "Free and open source. Available for macOS, Windows, and Linux."
 - **IMPORTANT:** Use JavaScript to detect the user's OS via `navigator.platform` or `navigator.userAgent` and make the matching platform button PRIMARY (larger, filled black) and the other platform SECONDARY (smaller, outline). If on Linux or mobile, show both equally with a note.
 - Hero visual: A stylized screenshot or mockup of the Jobotta app showing the resume editor or job board. Use a browser-frame or macOS window chrome mockup around a screenshot.
 
@@ -107,7 +107,7 @@ A comprehensive documentation page mirroring the in-app help but in a web-friend
 
 #### Sections:
 1. **Getting Started**
-   - System requirements (macOS 14+, Windows/Linux coming soon)
+   - System requirements (macOS 14+, Windows 10+, Ubuntu 20.04+)
    - Installation instructions
    - First-run setup wizard walkthrough
    - Where to get API keys (with direct links):
@@ -257,11 +257,16 @@ Use `navigator.platform` or `navigator.userAgent` to detect the user's OS and hi
   5. Launch Jobotta and complete the setup wizard
 
 **Linux Card:**
-- Icon: Linux/Tux icon
+- Icon: Linux/Tux icon or Monitor icon
 - Title: "Linux"
-- Subtitle: "Coming soon"
-- Text: "Linux (AppImage and .deb) builds are planned for a future release. Star the GitHub repo to get notified."
-- Link: "Watch on GitHub →" → `https://github.com/ovadeus/jobotta`
+- Subtitle: "Ubuntu 20.04+, Debian, Fedora, and more"
+- Two download buttons:
+  - Primary: "Download AppImage" → `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-1.0.0.AppImage`
+  - Secondary: "Download .deb" → `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta_1.0.0_amd64.deb`
+- Installation steps:
+  1. **AppImage (universal):** Download, make executable (`chmod +x Jobotta-1.0.0.AppImage`), and run. Works on most Linux distributions.
+  2. **Debian/Ubuntu (.deb):** Download and install with `sudo dpkg -i Jobotta_1.0.0_amd64.deb`. Run from your application menu or type `jobotta` in terminal.
+  3. The app will launch with a setup wizard to configure your API keys
 
 #### Below the cards:
 
@@ -269,16 +274,17 @@ Use `navigator.platform` or `navigator.userAgent` to detect the user's OS and hi
 - **Source code:** "Jobotta is open source (MIT License). View the source code →" → `https://github.com/ovadeus/jobotta`
 - **System requirements summary table:**
 
-| | macOS | Windows |
-|---|---|---|
-| OS | macOS 14 (Sonoma)+ | Windows 10/11 (64-bit) |
-| RAM | 4 GB minimum | 4 GB minimum |
-| Disk | ~200 MB | ~200 MB |
-| Required | Internet for AI features | Internet for AI features |
+| | macOS | Windows | Linux |
+|---|---|---|---|
+| OS | macOS 14 (Sonoma)+ | Windows 10/11 (64-bit) | Ubuntu 20.04+, Debian, Fedora |
+| RAM | 4 GB minimum | 4 GB minimum | 4 GB minimum |
+| Disk | ~200 MB | ~200 MB | ~200 MB |
+| Required | Internet for AI features | Internet for AI features | Internet for AI features |
 
 - **Troubleshooting section** (collapsible):
-  - "macOS says the app is damaged or can't be opened" → Right-click → Open, or `xattr -cr /Applications/Jobotta.app` in Terminal
+  - "macOS says the app is damaged or can't be opened" → Right-click → Open, or run `xattr -cr /Applications/Jobotta.app` in Terminal
   - "Windows SmartScreen blocks the installer" → Click "More info" → "Run anyway". This happens because the app isn't code-signed yet.
+  - "Linux AppImage won't run" → Make sure it's executable: `chmod +x Jobotta-1.0.0.AppImage`. You may also need FUSE installed: `sudo apt install libfuse2`
   - "The app launches but features don't work" → Make sure you've configured at least one AI API key in Settings → Application Settings → AI Configuration
 
 ---
