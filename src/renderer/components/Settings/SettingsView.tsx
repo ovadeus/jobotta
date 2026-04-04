@@ -84,10 +84,10 @@ export default function SettingsView({ onThemeChange }: SettingsViewProps) {
               padding: '10px 20px',
               fontSize: 13,
               fontWeight: activeTab === tab.key ? 600 : 400,
-              color: activeTab === tab.key ? 'var(--accent-indigo)' : 'var(--text-secondary)',
+              color: activeTab === tab.key ? '#1d1d1f' : 'var(--text-secondary)',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid var(--accent-indigo)' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #1d1d1f' : '2px solid transparent',
               marginBottom: -2,
               cursor: 'pointer',
               display: 'flex',
@@ -264,8 +264,8 @@ function AppSettingsTab({ settings, update, onThemeChange }: { settings: UserPre
                 className="btn"
                 style={{
                   flex: 1,
-                  background: (settings.theme || 'light') === t ? 'var(--accent-indigo)' : 'var(--bg-tertiary)',
-                  borderColor: (settings.theme || 'light') === t ? 'var(--accent-indigo)' : 'var(--border-color)',
+                  background: (settings.theme || 'light') === t ? '#1d1d1f' : 'var(--bg-tertiary)',
+                  borderColor: (settings.theme || 'light') === t ? '#1d1d1f' : 'var(--border-color)',
                   color: (settings.theme || 'light') === t ? 'white' : 'var(--text-primary)',
                   padding: '10px 8px',
                 }}
@@ -328,8 +328,8 @@ function AppSettingsTab({ settings, update, onThemeChange }: { settings: UserPre
                   className="btn"
                   style={{
                     flex: 1,
-                    background: isActive ? 'var(--accent-indigo)' : 'var(--bg-tertiary)',
-                    borderColor: isActive ? 'var(--accent-indigo)' : 'var(--border-color)',
+                    background: isActive ? '#1d1d1f' : 'var(--bg-tertiary)',
+                    borderColor: isActive ? '#1d1d1f' : 'var(--border-color)',
                     color: isActive ? 'white' : 'var(--text-primary)',
                     flexDirection: 'column',
                     padding: '10px 8px',

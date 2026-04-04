@@ -87,7 +87,7 @@ export default function ResumeBlockEditor({ block, onUpdate, onDelete, onToggle 
             <div style={{ display: 'flex', gap: 4 }}>
               <button
                 className="btn btn-sm"
-                style={{ background: !codeMode ? 'var(--accent-indigo)' : undefined, color: !codeMode ? 'white' : undefined, borderColor: !codeMode ? 'var(--accent-indigo)' : undefined }}
+                style={{ background: !codeMode ? '#1d1d1f' : undefined, color: !codeMode ? 'white' : undefined, borderColor: !codeMode ? '#1d1d1f' : undefined }}
                 onClick={() => {
                   if (codeMode) {
                     try {
@@ -101,7 +101,7 @@ export default function ResumeBlockEditor({ block, onUpdate, onDelete, onToggle 
               </button>
               <button
                 className="btn btn-sm"
-                style={{ background: codeMode ? 'var(--accent-indigo)' : undefined, color: codeMode ? 'white' : undefined, borderColor: codeMode ? 'var(--accent-indigo)' : undefined }}
+                style={{ background: codeMode ? '#1d1d1f' : undefined, color: codeMode ? 'white' : undefined, borderColor: codeMode ? '#1d1d1f' : undefined }}
                 onClick={() => {
                   setCodeText(JSON.stringify(content, null, 2));
                   setCodeMode(true);

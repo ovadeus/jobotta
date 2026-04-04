@@ -54,7 +54,7 @@ body {
   display: flex;
   align-items: center;
   -webkit-app-region: drag;
-  padding-left: 80px;
+  padding-left: 80px; /* macOS traffic light offset; overridden on Windows via JS */
 }
 
 .sidebar-header h1 {

@@ -166,7 +166,7 @@ export default function ResumeDetail({ resume, onUpdate }: Props) {
                 top: dragIdx > index ? -2 : undefined,
                 bottom: dragIdx < index ? -2 : undefined,
                 left: 0, right: 0, height: 3,
-                background: 'var(--accent-indigo)',
+                background: 'var(--accent-orange)',
                 borderRadius: 2,
                 zIndex: 5,
               }} />

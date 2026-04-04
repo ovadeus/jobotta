@@ -163,8 +163,8 @@ export default function AIAssistant() {
             key={tab.key}
             className="btn btn-sm"
             style={{
-              background: activeTab === tab.key ? 'var(--accent-indigo)' : 'transparent',
-              borderColor: activeTab === tab.key ? 'var(--accent-indigo)' : 'transparent',
+              background: activeTab === tab.key ? '#1d1d1f' : 'transparent',
+              borderColor: activeTab === tab.key ? '#1d1d1f' : 'transparent',
               color: activeTab === tab.key ? 'white' : 'var(--text-secondary)',
             }}
             onClick={() => { setActiveTab(tab.key); setResult(null); setError(null); setInterviewResult(null); }}

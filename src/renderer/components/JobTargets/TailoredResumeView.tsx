@@ -82,14 +82,14 @@ export default function TailoredResumeView({ blocks, resumeName, company, jobTit
             <div style={{ display: 'flex', gap: 2 }}>
               <button
                 className="btn btn-sm"
-                style={{ background: viewMode === 'form' ? 'var(--accent-indigo)' : undefined, color: viewMode === 'form' ? 'white' : undefined, borderColor: viewMode === 'form' ? 'var(--accent-indigo)' : undefined }}
+                style={{ background: viewMode === 'form' ? '#1d1d1f' : undefined, color: viewMode === 'form' ? 'white' : undefined, borderColor: viewMode === 'form' ? '#1d1d1f' : undefined }}
                 onClick={() => setViewMode('form')}
               >
                 Form
               </button>
               <button
                 className="btn btn-sm"
-                style={{ background: viewMode === 'code' ? 'var(--accent-indigo)' : undefined, color: viewMode === 'code' ? 'white' : undefined, borderColor: viewMode === 'code' ? 'var(--accent-indigo)' : undefined }}
+                style={{ background: viewMode === 'code' ? '#1d1d1f' : undefined, color: viewMode === 'code' ? 'white' : undefined, borderColor: viewMode === 'code' ? '#1d1d1f' : undefined }}
                 onClick={() => setViewMode('code')}
               >
                 Code

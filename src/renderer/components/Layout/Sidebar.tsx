@@ -6,6 +6,7 @@ import {
   Archive,
   Sparkle,
   ChartBar,
+  Question,
   GearSix,
 } from '@phosphor-icons/react';
 import type { Page } from '../../App';
@@ -93,10 +94,18 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           ))}
         </nav>
 
-        {/* Settings pinned to bottom */}
-        <div style={{ marginTop: 'auto', padding: '8px', borderTop: '1px solid var(--border-color)', position: 'relative', zIndex: 1 }}>
+        {/* Help & Settings pinned to bottom */}
+        <div style={{ marginTop: 'auto', padding: '8px', borderTop: '1px solid var(--border-color)', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <button
-            ref={settingsRef}
+            ref={el => { buttonRefs.current['help'] = el; }}
+            className={`sidebar-item ${currentPage === 'help' ? 'active' : ''}`}
+            onClick={() => onNavigate('help')}
+          >
+            <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Question size={18} /></span>
+            Help & Support
+          </button>
+          <button
+            ref={el => { buttonRefs.current['settings'] = el; settingsRef.current = el; }}
             className={`sidebar-item ${currentPage === 'settings' ? 'active' : ''}`}
             onClick={() => onNavigate('settings')}
           >

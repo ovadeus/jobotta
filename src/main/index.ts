@@ -14,21 +14,23 @@ const isDev = !app.isPackaged;
 // ─── macOS Application Menu ────────────────────────────────────
 
 function buildAppMenu() {
+  const isMac = process.platform === 'darwin';
+
   const template: Electron.MenuItemConstructorOptions[] = [
-    {
+    ...(isMac ? [{
       label: 'Jobotta',
       submenu: [
-        { label: 'About Jobotta', role: 'about' },
-        { type: 'separator' },
+        { label: 'About Jobotta', role: 'about' as const },
+        { type: 'separator' as const },
         { label: 'Preferences...', accelerator: 'CmdOrCtrl+,', click: () => mainWindow?.webContents.send('navigate', 'settings') },
-        { type: 'separator' },
-        { label: 'Hide Jobotta', role: 'hide' },
-        { label: 'Hide Others', role: 'hideOthers' },
-        { label: 'Show All', role: 'unhide' },
-        { type: 'separator' },
-        { label: 'Quit Jobotta', role: 'quit' },
+        { type: 'separator' as const },
+        { label: 'Hide Jobotta', role: 'hide' as const },
+        { label: 'Hide Others', role: 'hideOthers' as const },
+        { label: 'Show All', role: 'unhide' as const },
+        { type: 'separator' as const },
+        { label: 'Quit Jobotta', role: 'quit' as const },
       ],
-    },
+    }] : []),
     {
       label: 'File',
       submenu: [
@@ -218,8 +220,10 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     title: 'Jobotta',
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 16, y: 16 },
+    ...(process.platform === 'darwin' ? {
+      titleBarStyle: 'hiddenInset' as const,
+      trafficLightPosition: { x: 16, y: 16 },
+    } : {}),
     backgroundColor: '#ffffff',
     show: false, // Don't show until ready
     webPreferences: {
