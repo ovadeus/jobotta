@@ -40,9 +40,11 @@ The homepage is a conversion-focused landing page with these sections in order:
 - Large headline: **"Stop applying blind. Start applying smart."**
 - Subheadline: "Jobotta is a free desktop app that helps you build tailored resumes, generate AI cover letters, search jobs from LinkedIn & Indeed, and track every application — all in one place."
 - Two CTAs:
-  - Primary (black button): "Download for Mac" (links to GitHub releases or direct .dmg/.zip)
-  - Secondary (outline button): "See How It Works" (scrolls to features)
-- Below CTAs: Small text: "Free and open source. Available for macOS and Windows. Linux coming soon.."
+  - Primary (black button): "Download for Mac" — links to `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-1.0.0-mac.zip`
+  - Secondary (black outline button): "Download for Windows" — links to `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-Setup-1.0.0.exe`
+  - Below the buttons: Tertiary text link: "See How It Works ↓" (scrolls to features)
+- Below CTAs: Small text: "Free and open source. Available for macOS and Windows. Linux coming soon."
+- **IMPORTANT:** Use JavaScript to detect the user's OS via `navigator.platform` or `navigator.userAgent` and make the matching platform button PRIMARY (larger, filled black) and the other platform SECONDARY (smaller, outline). If on Linux or mobile, show both equally with a note.
 - Hero visual: A stylized screenshot or mockup of the Jobotta app showing the resume editor or job board. Use a browser-frame or macOS window chrome mockup around a screenshot.
 
 #### 1.2 Problem Statement Strip
@@ -215,19 +217,69 @@ The name "Jobotta" reflects the app's mission — it's about the job, but it's a
 
 ### Page 4: Download (/download)
 
-A simple, focused download page:
+A simple, focused download page with platform detection and clear installation instructions.
 
 - **Headline:** "Download Jobotta"
-- **Subheadline:** "Free. Local. Intelligent."
-- Current release: v1.0.0
-- Platform cards:
-  - **macOS** — Download DMG | Download ZIP — "macOS 14 (Sonoma) or later. Apple Silicon and Intel supported."
-  - **Windows** — "Download for Windows" — Windows 10/11. x64 supported.
-  - **Linux** — "Download for Windows" — Windows 10/11. x64 supported.
-- System requirements
-- Installation instructions (brief)
-- Link to GitHub releases page: github.com/ovadeus/jobotta/releases
-- "Looking for the source code?" → Link to GitHub repo
+- **Subheadline:** "Free. Local. Intelligent. No account required."
+- **Current release:** v1.0.0
+
+#### Platform Cards (side-by-side on desktop, stacked on mobile)
+
+Use `navigator.platform` or `navigator.userAgent` to detect the user's OS and highlight their platform card with a "Recommended for your system" badge.
+
+**macOS Card:**
+- Icon: Apple logo or Monitor icon
+- Title: "macOS"
+- Subtitle: "macOS 14 (Sonoma) or later"
+- Compatibility: "Apple Silicon (M1/M2/M3/M4) and Intel supported"
+- Two download buttons:
+  - Primary: "Download .zip" → `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-1.0.0-mac.zip`
+  - Secondary: "Download .dmg" → `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-1.0.0.dmg`
+- Installation steps (collapsible or below the card):
+  1. Download the .zip or .dmg file
+  2. For .zip: Unzip and drag **Jobotta.app** to your **Applications** folder
+  3. For .dmg: Open the disk image and drag Jobotta to Applications
+  4. On first launch, macOS may block the app. Right-click → **Open** to bypass, or go to **System Preferences → Privacy & Security → Open Anyway**
+  5. The app will launch with a setup wizard to configure your API keys
+
+**Windows Card:**
+- Icon: Windows logo or Monitor icon
+- Title: "Windows"
+- Subtitle: "Windows 10 or later (64-bit)"
+- One download button:
+  - Primary: "Download Installer (.exe)" → `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-Setup-1.0.0.exe`
+  - Secondary: "Download .zip (portable)" → `https://github.com/ovadeus/jobotta/releases/latest/download/Jobotta-1.0.0-win.zip`
+- Installation steps:
+  1. Download the .exe installer
+  2. Run **Jobotta-Setup-1.0.0.exe** — you may see a SmartScreen warning since the app isn't code-signed yet. Click **"More info" → "Run anyway"**
+  3. Choose your installation directory (defaults to Program Files)
+  4. A desktop shortcut and Start Menu entry will be created
+  5. Launch Jobotta and complete the setup wizard
+
+**Linux Card:**
+- Icon: Linux/Tux icon
+- Title: "Linux"
+- Subtitle: "Coming soon"
+- Text: "Linux (AppImage and .deb) builds are planned for a future release. Star the GitHub repo to get notified."
+- Link: "Watch on GitHub →" → `https://github.com/ovadeus/jobotta`
+
+#### Below the cards:
+
+- **All releases:** "View all versions on GitHub →" → `https://github.com/ovadeus/jobotta/releases`
+- **Source code:** "Jobotta is open source (MIT License). View the source code →" → `https://github.com/ovadeus/jobotta`
+- **System requirements summary table:**
+
+| | macOS | Windows |
+|---|---|---|
+| OS | macOS 14 (Sonoma)+ | Windows 10/11 (64-bit) |
+| RAM | 4 GB minimum | 4 GB minimum |
+| Disk | ~200 MB | ~200 MB |
+| Required | Internet for AI features | Internet for AI features |
+
+- **Troubleshooting section** (collapsible):
+  - "macOS says the app is damaged or can't be opened" → Right-click → Open, or `xattr -cr /Applications/Jobotta.app` in Terminal
+  - "Windows SmartScreen blocks the installer" → Click "More info" → "Run anyway". This happens because the app isn't code-signed yet.
+  - "The app launches but features don't work" → Make sure you've configured at least one AI API key in Settings → Application Settings → AI Configuration
 
 ---
 
