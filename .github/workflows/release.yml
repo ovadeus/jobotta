@@ -3,14 +3,15 @@ name: Build & Release
 on:
   push:
     tags:
-      - 'v*' # Triggers on any tag starting with 'v' (e.g., v1.0.0, v1.1.0)
+      - 'v*'
 
 permissions:
-  contents: write # Needed to create releases and upload assets
+  contents: write
 
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: macos-latest
@@ -32,19 +33,31 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm libarchive-tools
+
+      - name: Install dependencies (skip postinstall)
+        run: npm ci --ignore-scripts
+        env:
+          npm_config_ignore_scripts: true
 
       - name: Rebuild native modules for Electron
         run: npx electron-rebuild -f -m .
 
-      - name: Build app (compile TypeScript + bundle renderer)
+      - name: Build app
         run: npm run build
 
       - name: Package for ${{ matrix.platform }}
         run: npx electron-builder --${{ matrix.platform }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List release artifacts
+        shell: bash
+        run: ls -la release/ || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -57,9 +70,9 @@ jobs:
             release/*.AppImage
             release/*.deb
             release/*.blockmap
-            release/*.yml
-            release/*.yaml
+            release/latest*.yml
           if-no-files-found: ignore
+          retention-days: 5
 
   release:
     needs: build
@@ -70,10 +83,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          merge-multiple: true
 
-      - name: List artifacts
-        run: find artifacts -type f | head -30
+      - name: Flatten artifacts
+        run: |
+          mkdir -p release
+          find artifacts -type f \( -name "*.dmg" -o -name "*.zip" -o -name "*.exe" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.blockmap" -o -name "*.yml" \) -exec cp {} release/ \;
+          ls -la release/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -96,12 +111,12 @@ jobs:
             **Windows:** Run the .exe installer. If SmartScreen blocks it: "More info" → "Run anyway".
             **Linux:** Make the .AppImage executable (`chmod +x`) and run, or install the .deb with `sudo dpkg -i`.
 
-            ### What's New
-            See the [commit history](https://github.com/ovadeus/jobotta/commits/${{ github.ref_name }}) for details.
+            ### First Launch
+            The app will open with a setup wizard to configure your AI provider key (Gemini/OpenAI/Anthropic) and optional job search key.
 
             ---
-            Built automatically by GitHub Actions.
-          files: artifacts/**/*
+            Built automatically via GitHub Actions.
+          files: release/*
           draft: false
           prerelease: false
         env:
