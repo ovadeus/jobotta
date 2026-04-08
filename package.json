@@ -2,7 +2,7 @@
   "name": "jobotta-desktop",
   "version": "1.0.0",
   "description": "Jobotta Desktop — Intelligent Job Application Assistant",
-  "author": "David Meyers",
+  "author": "David Meyers <david@jobotta.app>",
   "main": "dist/main/main/index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
