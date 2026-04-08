@@ -4,120 +4,93 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-latest
-            platform: mac
-          - os: windows-latest
-            platform: win
-          - os: ubuntu-latest
-            platform: linux
-
-    runs-on: ${{ matrix.os }}
-
+  build-mac:
+    runs-on: macos-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Install Linux build dependencies
-        if: matrix.platform == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm libarchive-tools
-
-      - name: Install dependencies (skip postinstall)
-        run: npm ci --ignore-scripts
-        env:
-          npm_config_ignore_scripts: true
-
-      - name: Rebuild native modules for Electron
-        run: npx electron-rebuild -f -m .
-
-      - name: Build app
-        run: npm run build
-
-      - name: Package for ${{ matrix.platform }}
-        run: npx electron-builder --${{ matrix.platform }} --publish never
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: List release artifacts
-        shell: bash
-        run: ls -la release/ || true
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - run: npm ci --ignore-scripts
+      - run: npx electron-rebuild -f -m .
+      - run: npm run build
+      - run: npx electron-builder --mac zip dmg --publish never
+      - uses: actions/upload-artifact@v4
         with:
-          name: jobotta-${{ matrix.platform }}
+          name: mac
           path: |
-            release/*.dmg
             release/*.zip
+            release/*.dmg
+
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --ignore-scripts
+      - run: npx electron-rebuild -f -m .
+      - run: npm run build
+      - run: npx electron-builder --win nsis zip --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: win
+          path: |
             release/*.exe
+            release/*.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --ignore-scripts
+      - run: npx electron-rebuild -f -m .
+      - run: npm run build
+      - run: npx electron-builder --linux AppImage deb --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
             release/*.AppImage
             release/*.deb
-            release/*.blockmap
-            release/latest*.yml
-          if-no-files-found: ignore
-          retention-days: 5
 
   release:
-    needs: build
+    needs: [build-mac, build-win, build-linux]
     runs-on: ubuntu-latest
-
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: dist
 
-      - name: Flatten artifacts
-        run: |
-          mkdir -p release
-          find artifacts -type f \( -name "*.dmg" -o -name "*.zip" -o -name "*.exe" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.blockmap" -o -name "*.yml" \) -exec cp {} release/ \;
-          ls -la release/
+      - name: List all files
+        run: find dist -type f
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
           name: Jobotta ${{ github.ref_name }}
+          files: dist/**/*
           body: |
             ## Jobotta ${{ github.ref_name }}
 
-            ### Downloads
-
-            | Platform | File | Notes |
+            | Platform | File | Requirements |
             |---|---|---|
-            | **macOS** | `.dmg` or `.zip` | macOS 14 (Sonoma)+. Apple Silicon & Intel. |
+            | **macOS** | `.dmg` or `.zip` | macOS 14+ (Sonoma). Apple Silicon & Intel. |
             | **Windows** | `.exe` installer | Windows 10/11 (64-bit). |
             | **Linux** | `.AppImage` or `.deb` | Ubuntu 20.04+, Debian, Fedora. |
 
-            ### Installation
-
-            **macOS:** Download the .zip, unzip, drag to Applications. On first launch: right-click → Open.
-            **Windows:** Run the .exe installer. If SmartScreen blocks it: "More info" → "Run anyway".
-            **Linux:** Make the .AppImage executable (`chmod +x`) and run, or install the .deb with `sudo dpkg -i`.
-
-            ### First Launch
-            The app will open with a setup wizard to configure your AI provider key (Gemini/OpenAI/Anthropic) and optional job search key.
-
-            ---
-            Built automatically via GitHub Actions.
-          files: release/*
-          draft: false
-          prerelease: false
+            **macOS:** Unzip or open .dmg, drag to Applications. First launch: right-click → Open.
+            **Windows:** Run the .exe. SmartScreen warning: click "More info" → "Run anyway".
+            **Linux:** `chmod +x Jobotta-*.AppImage && ./Jobotta-*.AppImage` or `sudo dpkg -i *.deb`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
