@@ -58,11 +58,14 @@
       "target": [
         "nsis",
         "zip"
-      ]
+      ],
+      "icon": "resources/icons/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "installerIcon": "resources/icons/icon.ico",
+      "uninstallerIcon": "resources/icons/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Jobotta"
