@@ -24,31 +24,38 @@ export async function callAI(prompt: string): Promise<string> {
 
 function formatAIError(err: any, provider: string): string {
   const msg = err?.message || String(err);
+  // Try to extract nested error message from SDK error objects
+  const nestedMsg = err?.error?.error?.message || err?.error?.message || err?.response?.data?.error?.message || '';
+  const fullMsg = nestedMsg || msg;
 
   // Rate limit / quota errors
-  if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('rate_limit')) {
+  if (fullMsg.includes('429') || fullMsg.includes('RESOURCE_EXHAUSTED') || fullMsg.includes('quota') || fullMsg.includes('rate_limit')) {
     return `${provider} API rate limit or quota exceeded. Try again in a minute, switch to a different model in Settings, or use a different AI provider.`;
   }
+  // Invalid model
+  if (fullMsg.includes('model') && (fullMsg.includes('not found') || fullMsg.includes('invalid') || fullMsg.includes('does not exist') || fullMsg.includes('404'))) {
+    return `Invalid model selected for ${provider}. Go to Settings → AI Configuration and pick a different model.`;
+  }
   // Auth errors
-  if (msg.includes('401') || msg.includes('403') || msg.includes('invalid_api_key') || msg.includes('authentication')) {
+  if (fullMsg.includes('401') || fullMsg.includes('403') || fullMsg.includes('invalid_api_key') || fullMsg.includes('authentication') || fullMsg.includes('Incorrect API key')) {
     return `${provider} API key is invalid or expired. Check your key in Settings.`;
   }
   // Billing
-  if (msg.includes('billing') || msg.includes('insufficient_quota')) {
+  if (fullMsg.includes('billing') || fullMsg.includes('insufficient_quota') || fullMsg.includes('credit balance')) {
     return `${provider} account billing issue. Check your account at the provider's dashboard.`;
   }
   // Network
-  if (msg.includes('ENOTFOUND') || msg.includes('ECONNREFUSED') || msg.includes('fetch failed')) {
+  if (fullMsg.includes('ENOTFOUND') || fullMsg.includes('ECONNREFUSED') || fullMsg.includes('fetch failed')) {
     return `Cannot reach ${provider} API. Check your internet connection.`;
   }
   // Context length
-  if (msg.includes('context_length') || msg.includes('too long') || msg.includes('maximum')) {
+  if (fullMsg.includes('context_length') || fullMsg.includes('too long') || fullMsg.includes('maximum')) {
     return `Content too long for ${provider}. Try shortening the job description or resume.`;
   }
 
-  // Fallback — strip JSON noise, keep it short
-  const clean = msg.replace(/\{[\s\S]*\}/g, '').replace(/\[[\s\S]*\]/g, '').trim();
-  return clean.length > 200 ? clean.slice(0, 200) + '...' : clean || `${provider} API error. Check Settings.`;
+  // Fallback — prefer the nested message, strip JSON noise
+  const clean = (nestedMsg || msg).replace(/\{[\s\S]*\}/g, '').replace(/\[[\s\S]*\]/g, '').trim();
+  return clean.length > 300 ? clean.slice(0, 300) + '...' : clean || `${provider} API error. Check Settings.`;
 }
 
 async function callGemini(prompt: string, settings: UserPreferences): Promise<string> {
@@ -76,7 +83,7 @@ async function callAnthropic(prompt: string, settings: UserPreferences): Promise
   const apiKey = settings.anthropicApiKey;
   if (!apiKey) throw new Error('Anthropic API key not configured. Add it in Settings.');
   const client = new Anthropic({ apiKey });
-  const model = settings.anthropicModel || 'claude-sonnet-4-20250514';
+  const model = settings.anthropicModel || 'claude-sonnet-4-5';
   const response = await client.messages.create({
     model,
     max_tokens: 4096,

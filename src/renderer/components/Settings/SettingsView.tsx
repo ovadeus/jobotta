@@ -31,9 +31,9 @@ const PROVIDER_INFO: Record<AIProvider, { label: string; keyPlaceholder: string;
     keyPlaceholder: 'sk-ant-...',
     keyUrl: 'console.anthropic.com/settings/keys',
     models: [
-      { value: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4 (recommended)' },
-      { value: 'claude-haiku-4-20250414', label: 'Claude Haiku 4 (fast)' },
-      { value: 'claude-opus-4-20250514', label: 'Claude Opus 4 (most capable)' },
+      { value: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5 (recommended)' },
+      { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5 (fast)' },
+      { value: 'claude-opus-4-5', label: 'Claude Opus 4.5 (most capable)' },
     ],
   },
 };
@@ -230,7 +230,7 @@ function AppSettingsTab({ settings, update, onThemeChange }: { settings: UserPre
     switch (p) {
       case 'gemini': return settings.geminiModel || 'gemini-2.5-flash';
       case 'openai': return settings.openaiModel || 'gpt-4o';
-      case 'anthropic': return settings.anthropicModel || 'claude-sonnet-4-20250514';
+      case 'anthropic': return settings.anthropicModel || 'claude-sonnet-4-5';
     }
   };
 
